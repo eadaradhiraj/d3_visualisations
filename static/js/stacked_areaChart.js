@@ -862,7 +862,6 @@ var data1 = [{
 ];
 
 function render_line_chart(config) {
-  console.log(JSON.stringify(config))
   var margin = config.margin;
   var data = config.data;
   data = _.sortBy(data, function (d) {
@@ -902,7 +901,6 @@ function render_line_chart(config) {
       return y(d[0]);
     })
     .y1(function (d) {
-      // debugger
       return y(d[1]);
     });
 
@@ -947,8 +945,6 @@ function render_line_chart(config) {
     .on("mousemove", function (data) {
       var x0 = x.invert(d3.mouse(this)[0])
 
-      console.log(x0)
-
       filtered_data = data.filter(function (d) {
         var x0_date = new Date(Number(x0))
         var search_date = new Date(Number(d.data[config.sortby_column]))
@@ -962,15 +958,15 @@ function render_line_chart(config) {
 
       var toolTip_html = ''
       $.each(filtered_data.data, function (index, value) {
-        if (!index.toLowerCase().startsWith("date") ||
-          index.toLowerCase() != "time") {
+        if (!index.toLowerCase().startsWith("date") &&
+          index.toLowerCase() !== "time") {
           toolTip_html += index + ":" + value + "<br>";
         }
       })
 
       tooltip
-        .style("left", d3.event.pageX - 50 + "px")
-        .style("top", d3.event.pageY - 150 + "px")
+        .style("left", d3.event.pageX - config.tooltip.left + "px")
+        .style("top", d3.event.pageY - config.tooltip.left + "px")
         .style("display", "inline-block")
         .html(toolTip_html);
     })
@@ -1080,7 +1076,7 @@ var data2 = [{
   }
 ]
 var data3 = [{
-    "date": 1949596200000,
+    "date": 1383157800000,
     "Kermit": 113.44,
     "piggy": 435.15,
     "Gonzo": 19.57,
@@ -1097,7 +1093,7 @@ var data3 = [{
     "sam": 11.31
   },
   {
-    "date": 1920738600000,
+    "date": 1385749800000,
     "Kermit": 109.86,
     "piggy": 506.85,
     "Gonzo": 18.97,
@@ -1114,7 +1110,7 @@ var data3 = [{
     "sam": 11.31
   },
   {
-    "date": 1954866600000,
+    "date": 1388428200000,
     "Kermit": 113.46,
     "piggy": 644.88,
     "Gonzo": 19.57,
@@ -1150,7 +1146,11 @@ var config1 = {
   xaxis: {
     label_dx: "2.5em",
     label_dy: "1.25em",
-    label_transform: "rotate(30)"
+    label_transform: "rotate(60)"
+  },
+  tooltip: {
+    left: 50,
+    top: 150
   }
 };
 
@@ -1179,6 +1179,10 @@ var config2 = {
     label_dx: "2.5em",
     label_dy: "1.25em",
     label_transform: "rotate(30)"
+  },
+  tooltip: {
+    left: 50,
+    top: 150
   }
 };
 
@@ -1212,7 +1216,11 @@ var config3 = {
   xaxis: {
     label_dx: "2.5em",
     label_dy: "1.25em",
-    label_transform: "rotate(30)"
+    label_transform: "rotate(-30)"
+  },
+  tooltip: {
+    left: 50,
+    top: 150
   }
 };
 
