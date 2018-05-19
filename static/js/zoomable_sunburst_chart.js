@@ -1,6 +1,7 @@
 function zoomable_sunburst_chart(config) {
-    const width = config.width,
-        height = config.height,
+
+    const width = 500,
+        height = 500,
         maxRadius = (Math.min(width, height) / 2) - 5;
 
     const formatNumber = d3.format(',d');
@@ -49,8 +50,8 @@ function zoomable_sunburst_chart(config) {
     };
 
     const svg = d3.select(config.selector).append('svg')
-        .style('width', '100vw')
-        .style('height', '100vh')
+        .style('width', config.width)
+        .style('height', config.height)
         .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
         .on('click', () => focusOn()); // Reset zoom on canvas click
 
@@ -145,7 +146,7 @@ function zoomable_sunburst_chart(config) {
     }
 }
 
-var data = {
+var data1 = {
     "name": "flare",
     "children": [{
             "name": "analytics",
@@ -1152,7 +1153,7 @@ var data = {
     ]
 }
 
-var data1 = {
+var data2 = {
     "name": "Main",
     "isMain": "true",
     "systemName": "Main/Home",
@@ -1429,11 +1430,19 @@ var data1 = {
 
 }
 
-var config = {
-    data: data1,
-    selector: "#sunburst",
-    width: 960,
-    height: 700
+var config1 = {
+    data: data2,
+    selector: "#sunburst1",
+    width: "100vw",
+    height: "100vh"
 }
 
-zoomable_sunburst_chart(config)
+var config2 = {
+    data: data2,
+    selector: "#sunburst2",
+    width: 1000,
+    height: 1000
+}
+
+zoomable_sunburst_chart(config1)
+zoomable_sunburst_chart(config2)
