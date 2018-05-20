@@ -934,13 +934,13 @@ function render_line_chart(config) {
     .enter()
     .append("g")
     .attr("class", "layer");
+  
+  var color = d3.scaleOrdinal(d3.schemeCategory20);
 
   layer
     .append("path")
     .attr("class", "area")
-    .style("fill", function (d) {
-      return config.set_color[d.key]
-    })
+    .style("fill", function(d) { return color(d.key); })
     .attr("d", area)
     .on("mousemove", function (data) {
       var x0 = x.invert(d3.mouse(this)[0])
@@ -1137,11 +1137,6 @@ var config1 = {
     bottom: 30,
     left: 50
   },
-  set_color: {
-    negative: "#93331A",
-    neutral: "#C1C1C1",
-    positive: "#4F9A3F"
-  },
   formatstring: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
@@ -1149,7 +1144,7 @@ var config1 = {
     label_transform: "rotate(60)"
   },
   tooltip: {
-    left: 50,
+    left: 100,
     top: 150
   }
 };
@@ -1164,16 +1159,6 @@ var config2 = {
     bottom: 30,
     left: 50
   },
-  set_color: {
-    "Google Chrome": "#93331A",
-    "Internet Explorer": "#C1C1C1",
-    "Firefox": "#4F9A3F",
-    "Safari": "#93221A",
-    "Microsoft Edge": "#B1C2C1",
-    "Opera": "#4F9B4E",
-    "Mozilla": "#94321A",
-    "Other/Unknown": "#A1C2A1"
-  },
   formatstring: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
@@ -1181,8 +1166,8 @@ var config2 = {
     label_transform: "rotate(30)"
   },
   tooltip: {
-    left: 50,
-    top: 150
+    left: 200,
+    top: 300
   }
 };
 
@@ -1196,22 +1181,6 @@ var config3 = {
     bottom: 30,
     left: 50
   },
-  set_color: {
-    "Kermit": "#93331A",
-    "piggy": "#C1C1C1",
-    "Gonzo": "#4F9A3F",
-    "fuzzy": "#93221A",
-    "hogthrob": "#B1C2C1",
-    "animal": "#4F9B4E",
-    "floyd": "#94321A",
-    "Gabriel": "#A1C2A1",
-    "Beaker": "#4E7B4E",
-    "scooter": "#93422B",
-    "statler": "#A1C3B1",
-    "waldorf": "#82221A",
-    "slim": "#4E9B3C",
-    "sam": "#B1D3B1"
-  },
   formatstring: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
@@ -1219,8 +1188,8 @@ var config3 = {
     label_transform: "rotate(-30)"
   },
   tooltip: {
-    left: 50,
-    top: 150
+    left: 200,
+    top: 300
   }
 };
 
