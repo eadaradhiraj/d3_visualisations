@@ -2196,6 +2196,10 @@ var data = [{
     }
 ]
 
+var data1 = [
+    {"year":315532800000,"variableA":"70","variableB":"52","variableC":"145","variableD":"75"},{"year":347155200000,"variableA":"77","variableB":"51","variableC":"156","variableD":"80"},{"year":378691200000,"variableA":"81","variableB":"55","variableC":"169","variableD":"79"},{"year":410227200000,"variableA":"78","variableB":"55","variableC":"171","variableD":"91"},{"year":441763200000,"variableA":"80","variableB":"55","variableC":"187","variableD":"102"},{"year":473385600000,"variableA":"79","variableB":"53","variableC":"199","variableD":"103"},{"year":504921600000,"variableA":"79","variableB":"54","variableC":"204","variableD":"102"},{"year":536457600000,"variableA":"78","variableB":"53","variableC":"218","variableD":"104"},{"year":567993600000,"variableA":"75","variableB":"51","variableC":"232","variableD":"105"},{"year":599616000000,"variableA":"78","variableB":"48","variableC":"233","variableD":"106"},{"year":631152000000,"variableA":"76","variableB":"51","variableC":"233","variableD":"112"},{"year":662688000000,"variableA":"73","variableB":"55","variableC":"232","variableD":"111"},{"year":694224000000,"variableA":"70","variableB":"52","variableC":"240","variableD":"122"},{"year":725846400000,"variableA":"69","variableB":"50","variableC":"256","variableD":"122"},{"year":757382400000,"variableA":"74","variableB":"50","variableC":"273","variableD":"131"},{"year":788918400000,"variableA":"71","variableB":"51","variableC":"286","variableD":"128"},{"year":820454400000,"variableA":"71","variableB":"53","variableC":"283","variableD":"129"},{"year":852076800000,"variableA":"76","variableB":"51","variableC":"292","variableD":"126"},{"year":883612800000,"variableA":"81","variableB":"49","variableC":"298","variableD":"132"},{"year":915148800000,"variableA":"80","variableB":"53","variableC":"313","variableD":"142"},{"year":946684800000,"variableA":"77","variableB":"59","variableC":"321","variableD":"152"},{"year":978307200000,"variableA":"82","variableB":"63","variableC":"338","variableD":"162"},{"year":1009843200000,"variableA":"88","variableB":"67","variableC":"337","variableD":"171"},{"year":1041379200000,"variableA":"90","variableB":"69","variableC":"338","variableD":"177"},{"year":1072915200000,"variableA":"90","variableB":"75","variableC":"338","variableD":"183"},{"year":1104537600000,"variableA":"92","variableB":"80","variableC":"351","variableD":"180"},{"year":1136073600000,"variableA":"93","variableB":"87","variableC":"367","variableD":"188"},{"year":1167609600000,"variableA":"91","variableB":"91","variableC":"375","variableD":"186"},{"year":1199145600000,"variableA":"90","variableB":"96","variableC":"374","variableD":"195"},{"year":1230768000000,"variableA":"97","variableB":"97","variableC":"385","variableD":"207"},{"year":1262304000000,"variableA":"104","variableB":"101","variableC":"401","variableD":"206"},{"year":1293840000000,"variableA":"111","variableB":"106","variableC":"403","variableD":"205"},{"year":1325376000000,"variableA":"115","variableB":"105","variableC":"417","variableD":"204"},{"year":1356998400000,"variableA":"117","variableB":"108","variableC":"420","variableD":"211"},{"year":1388534400000,"variableA":"121","variableB":"107","variableC":"436","variableD":"217"},{"year":1420070400000,"variableA":"121","variableB":"104","variableC":"449","variableD":"216"}
+]
+
 function multiline_chart(config) {
     var margin = config.margin,
         width = 900 - margin.left - margin.right,
@@ -2222,7 +2226,7 @@ function multiline_chart(config) {
             return y(d.val);
         });
 
-    var svg = d3.select(config.selector).append("svg")
+    var svg = d3.select("#"+config.selector).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -2231,12 +2235,8 @@ function multiline_chart(config) {
     var data = config.data;
 
     color.domain(d3.keys(data[0]).filter(function (key) {
-        return key !== "date";
+        return key !== config.k;
     }));
-
-    // data.forEach(function(d) {
-    //   d.date = parseDate(d.date);
-    // });
 
     var entries = color.domain().map(function (name) {
         return {
@@ -2306,6 +2306,8 @@ function multiline_chart(config) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
+        .style("fill", "#000")
+        .style("font-size", "15")
         .text(config.yaxis_label)
 
     var entry = svg.selectAll(".entry")
@@ -2341,21 +2343,21 @@ function multiline_chart(config) {
         });
 
     var mouseG = svg.append("g")
-        .attr("class", "mouse-over-effects");
+        .attr("class", "mouse-over-effects"+" "+config.selector);
 
     mouseG.append("path") // this is the black vertical line to follow mouse
-        .attr("class", "mouse-line")
+        .attr("class", "mouse-line"+" "+config.selector)
         .style("stroke", "black")
         .style("stroke-width", "1px")
         .style("opacity", "0");
 
     var lines = document.getElementsByClassName('line');
 
-    var mousePerLine = mouseG.selectAll('.mouse-per-line')
+    var mousePerLine = mouseG.selectAll('.mouse-per-line'+"."+config.selector)
         .data(entries)
         .enter()
         .append("g")
-        .attr("class", "mouse-per-line");
+        .attr("class", "mouse-per-line"+" "+config.selector);
 
     mousePerLine.append("circle")
         .attr("r", 7)
@@ -2375,24 +2377,24 @@ function multiline_chart(config) {
         .attr('fill', 'none')
         .attr('pointer-events', 'all')
         .on('mouseout', function () { // on mouse out hide line, circles and text
-            d3.select(".mouse-line")
+            d3.select(".mouse-line"+"."+config.selector)
                 .style("opacity", "0");
-            d3.selectAll(".mouse-per-line circle")
+            d3.selectAll(".mouse-per-line"+"."+config.selector+" "+"circle")
                 .style("opacity", "0");
-            d3.selectAll(".mouse-per-line text")
+            d3.selectAll("."+config.selector+".mouse-per-line text")
                 .style("opacity", "0");
         })
         .on('mouseover', function () { // on mouse in show line, circles and text
-            d3.select(".mouse-line")
+            d3.select(".mouse-line"+"."+config.selector)
                 .style("opacity", "1");
-            d3.selectAll(".mouse-per-line circle")
+            d3.selectAll(".mouse-per-line"+"."+config.selector+" "+"circle")
                 .style("opacity", "1");
-            d3.selectAll(".mouse-per-line text")
+            d3.selectAll("."+config.selector+".mouse-per-line text")
                 .style("opacity", "1");
         })
         .on('mousemove', function () { // mouse moving over canvas
             var mouse = d3.mouse(this);
-            d3.select(".mouse-line")
+            d3.select(".mouse-line"+"."+config.selector)
                 .attr("d", function () {
                     var d = "M" + mouse[0] + "," + height;
                     d += " " + mouse[0] + "," + 0;
@@ -2433,10 +2435,10 @@ function multiline_chart(config) {
 var config = {
     data: data,
     k: "date",
-    v: "temperature",
-    selector: "#multiline_chart",
+    // v: "temperature",
+    selector: "multiline_chart",
     margin: {
-        top: 20,
+        top: 0,
         right: 80,
         bottom: 30,
         left: 50
@@ -2446,4 +2448,21 @@ var config = {
     yaxis_label: "Temperature (ºF)"
 }
 
+var config1 = {
+    data: data1,
+    k: "year",
+    // v: "temperature",
+    selector: "multiline_chart1",
+    margin: {
+        top: 20,
+        right: 80,
+        bottom: 30,
+        left: 50
+    },
+    time_format: "%Y",
+    line_stroke_width: "3.5px",
+    yaxis_label: "God Knows"
+}
+
 multiline_chart(config)
+multiline_chart(config1)
