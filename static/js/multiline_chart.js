@@ -1,3 +1,5 @@
+
+//GET gridlines
 var data = [{
         date: 1317427200000,
         "New York": 63.4,
@@ -2213,9 +2215,9 @@ function multiline_chart(config) {
 
     var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(config.time_format));
+    var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat(config.time_format)).ticks(5);
 
-    var yAxis = d3.axisLeft(y);
+    var yAxis = d3.axisLeft(y).ticks(5);
 
     var line = d3.line()
         .curve(d3.curveBasis)
@@ -2296,11 +2298,11 @@ function multiline_chart(config) {
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
+        .call(xAxis.tickSize(-height))
 
     svg.append("g")
         .attr("class", "y axis")
-        .call(yAxis)
+        .call(yAxis.tickSize(-width))
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
@@ -2344,6 +2346,10 @@ function multiline_chart(config) {
 
     var mouseG = svg.append("g")
         .attr("class", "mouse-over-effects"+" "+config.selector);
+
+    d3.selectAll('g.tick line')
+        .style('stroke-width', 0.7)
+        .style("stroke", "lightgrey")
 
     mouseG.append("path") // this is the black vertical line to follow mouse
         .attr("class", "mouse-line"+" "+config.selector)
