@@ -978,7 +978,7 @@ function render_line_chart(config) {
     .append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.timeFormat(config.formatstring)))
+    .call(d3.axisBottom(x).tickFormat(d3.timeFormat(config.time_format)))
     .selectAll("text")
     .attr("dx", config.xaxis.label_dx)
     .attr("dy", config.xaxis.label_dy)
@@ -1137,7 +1137,7 @@ var config1 = {
     bottom: 30,
     left: 50
   },
-  formatstring: "%d-%b-%y",
+  time_format: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
     label_dy: "1.25em",
@@ -1159,7 +1159,7 @@ var config2 = {
     bottom: 30,
     left: 50
   },
-  formatstring: "%d-%b-%y",
+  time_format: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
     label_dy: "1.25em",
@@ -1181,7 +1181,7 @@ var config3 = {
     bottom: 30,
     left: 50
   },
-  formatstring: "%d-%b-%y",
+  time_format: "%d-%b-%y",
   xaxis: {
     label_dx: "2.5em",
     label_dy: "1.25em",
