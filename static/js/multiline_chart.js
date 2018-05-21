@@ -2198,16 +2198,14 @@ var data = [{
 
 function multiline_chart(config) {
     var margin = config.margin,
-      width = 900 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
-
-    // var parseDate = d3.timeParse(config.time_format);
+        width = 900 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
     var x = d3.scaleTime()
-      .range([0, width]);
+        .range([0, width]);
 
     var y = d3.scaleLinear()
-      .range([height, 0]);
+        .range([height, 0]);
 
     var color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -2216,221 +2214,226 @@ function multiline_chart(config) {
     var yAxis = d3.axisLeft(y);
 
     var line = d3.line()
-      .curve(d3.curveBasis)
-      .x(function(d) {
-        return x(d.date);
-      })
-      .y(function(d) {
-        return y(d.temperature);
-      });
+        .curve(d3.curveBasis)
+        .x(function (d) {
+            return x(d.key);
+        })
+        .y(function (d) {
+            return y(d.val);
+        });
 
     var svg = d3.select(config.selector).append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var data = config.data;
+    var data = config.data;
 
-    color.domain(d3.keys(data[0]).filter(function(key) {
-      return key !== "date";
+    color.domain(d3.keys(data[0]).filter(function (key) {
+        return key !== "date";
     }));
 
     // data.forEach(function(d) {
     //   d.date = parseDate(d.date);
     // });
 
-    var cities = color.domain().map(function(name) {
-      return {
-        name: name,
-        values: data.map(function(d) {
-          return {
-            date: d.date,
-            temperature: +d[name]
-          };
-        })
-      };
+    var entries = color.domain().map(function (name) {
+        return {
+            name: name,
+            values: data.map(function (d) {
+                return {
+                    key: d[config.k],
+                    val: +d[name]
+                };
+            })
+        };
     });
 
-    x.domain(d3.extent(data, function(d) {
-      return d.date;
+    x.domain(d3.extent(data, function (d) {
+        return d[config.k];
     }));
 
     y.domain([
-      d3.min(cities, function(c) {
-        return d3.min(c.values, function(v) {
-          return v.temperature;
-        });
-      }),
-      d3.max(cities, function(c) {
-        return d3.max(c.values, function(v) {
-          return v.temperature;
-        });
-      })
+        d3.min(entries, function (c) {
+            return d3.min(c.values, function (v) {
+                return v.val;
+            });
+        }),
+        d3.max(entries, function (c) {
+            return d3.max(c.values, function (v) {
+                return v.val;
+            });
+        })
     ]);
 
     var legend = svg.selectAll('g')
-      .data(cities)
-      .enter()
-      .append('g')
-      .attr('class', 'legend');
+        .data(entries)
+        .enter()
+        .append('g')
+        .attr('class', 'legend');
 
     legend.append('rect')
-      .attr('x', width - 20)
-      .attr('y', function(d, i) {
-        return i * 20;
-      })
-      .attr('width', 10)
-      .attr('height', 10)
-      .style('fill', function(d) {
-        return color(d.name);
-      });
+        .attr('x', width - 20)
+        .attr('y', function (d, i) {
+            return i * 20;
+        })
+        .attr('width', 10)
+        .attr('height', 10)
+        .style('fill', function (d) {
+            return color(d.name);
+        });
 
     legend.append('text')
-      .attr('x', width - 8)
-      .attr('y', function(d, i) {
-        return (i * 20) + 9;
-      })
-      .text(function(d) {
-        return d.name;
-      });
+        .attr('x', width - 8)
+        .attr('y', function (d, i) {
+            return (i * 20) + 9;
+        })
+        .text(function (d) {
+            return d.name;
+        });
 
     svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
 
     svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Temperature (ºF)");
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(config.yaxis_label)
 
-    var city = svg.selectAll(".city")
-      .data(cities)
-      .enter().append("g")
-      .attr("class", "city");
+    var entry = svg.selectAll(".entry")
+        .data(entries)
+        .enter().append("g")
+        .attr("class", "entry");
 
-    city.append("path")
-      .attr("class", "line")
-      .attr("d", function(d) {
-          console.log(d)
-        return line(d.values);
-      })
-      .style("stroke", function(d) {
-        return color(d.name);
-      });
+    entry.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) {
+            return line(d.values);
+        })
+        .style("stroke", function (d) {
+            return color(d.name);
+        })
+        .style("stroke-width", config.line_stroke_width)
+        .style("fill", "none")
 
-    city.append("text")
-      .datum(function(d) {
-        return {
-          name: d.name,
-          value: d.values[d.values.length - 1]
-        };
-      })
-      .attr("transform", function(d) {
-        return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")";
-      })
-      .attr("x", 3)
-      .attr("dy", ".35em")
-      .text(function(d) {
-        return d.name;
-      });
+    entry.append("text")
+        .datum(function (d) {
+            return {
+                name: d.name,
+                value: d.values[d.values.length - 1]
+            };
+        })
+        .attr("transform", function (d) {
+            return "translate(" + x(d.value.key) + "," + y(d.value.val) + ")";
+        })
+        .attr("x", 3)
+        .attr("dy", ".35em")
+        .text(function (d) {
+            return d.name;
+        });
 
     var mouseG = svg.append("g")
-      .attr("class", "mouse-over-effects");
+        .attr("class", "mouse-over-effects");
 
     mouseG.append("path") // this is the black vertical line to follow mouse
-      .attr("class", "mouse-line")
-      .style("stroke", "black")
-      .style("stroke-width", "1px")
-      .style("opacity", "0");
-      
+        .attr("class", "mouse-line")
+        .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .style("opacity", "0");
+
     var lines = document.getElementsByClassName('line');
 
     var mousePerLine = mouseG.selectAll('.mouse-per-line')
-      .data(cities)
-      .enter()
-      .append("g")
-      .attr("class", "mouse-per-line");
+        .data(entries)
+        .enter()
+        .append("g")
+        .attr("class", "mouse-per-line");
 
     mousePerLine.append("circle")
-      .attr("r", 7)
-      .style("stroke", function(d) {
-        return color(d.name);
-      })
-      .style("fill", "none")
-      .style("stroke-width", "1px")
-      .style("opacity", "0");
+        .attr("r", 7)
+        .style("stroke", function (d) {
+            return color(d.name);
+        })
+        .style("fill", "none")
+        .style("stroke-width", "1px")
+        .style("opacity", "0");
 
     mousePerLine.append("text")
-      .attr("transform", "translate(10,3)");
+        .attr("transform", "translate(10,3)");
 
     mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
-      .attr('width', width) // can't catch mouse events on a g element
-      .attr('height', height)
-      .attr('fill', 'none')
-      .attr('pointer-events', 'all')
-      .on('mouseout', function() { // on mouse out hide line, circles and text
-        d3.select(".mouse-line")
-          .style("opacity", "0");
-        d3.selectAll(".mouse-per-line circle")
-          .style("opacity", "0");
-        d3.selectAll(".mouse-per-line text")
-          .style("opacity", "0");
-      })
-      .on('mouseover', function() { // on mouse in show line, circles and text
-        d3.select(".mouse-line")
-          .style("opacity", "1");
-        d3.selectAll(".mouse-per-line circle")
-          .style("opacity", "1");
-        d3.selectAll(".mouse-per-line text")
-          .style("opacity", "1");
-      })
-      .on('mousemove', function() { // mouse moving over canvas
-        var mouse = d3.mouse(this);
-        d3.select(".mouse-line")
-          .attr("d", function() {
-            var d = "M" + mouse[0] + "," + height;
-            d += " " + mouse[0] + "," + 0;
-            return d;
-          });
+        .attr('width', width) // can't catch mouse events on a g element
+        .attr('height', height)
+        .attr('fill', 'none')
+        .attr('pointer-events', 'all')
+        .on('mouseout', function () { // on mouse out hide line, circles and text
+            d3.select(".mouse-line")
+                .style("opacity", "0");
+            d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "0");
+            d3.selectAll(".mouse-per-line text")
+                .style("opacity", "0");
+        })
+        .on('mouseover', function () { // on mouse in show line, circles and text
+            d3.select(".mouse-line")
+                .style("opacity", "1");
+            d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "1");
+            d3.selectAll(".mouse-per-line text")
+                .style("opacity", "1");
+        })
+        .on('mousemove', function () { // mouse moving over canvas
+            var mouse = d3.mouse(this);
+            d3.select(".mouse-line")
+                .attr("d", function () {
+                    var d = "M" + mouse[0] + "," + height;
+                    d += " " + mouse[0] + "," + 0;
+                    return d;
+                });
 
-        d3.selectAll(".mouse-per-line")
-          .attr("transform", function(d, i) {
-            var xDate = x.invert(mouse[0]),
-                bisect = d3.bisector(function(d) { return d.date; }).right;
-                idx = bisect(d.values, xDate);
-            
-            var beginning = 0,
-                end = lines[i].getTotalLength(),
-                target = null;
+            d3.selectAll(".mouse-per-line")
+                .attr("transform", function (d, i) {
+                    var xDate = x.invert(mouse[0]),
+                        bisect = d3.bisector(function (d) {
+                            return d.date;
+                        }).right;
+                    idx = bisect(d.values, xDate);
 
-            while (true){
-              target = Math.floor((beginning + end) / 2);
-              pos = lines[i].getPointAtLength(target);
-              if ((target === end || target === beginning) && pos.x !== mouse[0]) {
-                  break;
-              }
-              if (pos.x > mouse[0])      end = target;
-              else if (pos.x < mouse[0]) beginning = target;
-              else break; //position found
-            }
-            
-            d3.select(this).select('text')
-              .text(y.invert(pos.y).toFixed(2));
-              
-            return "translate(" + mouse[0] + "," + pos.y +")";
-          });
-      });
+                    var beginning = 0,
+                        end = lines[i].getTotalLength(),
+                        target = null;
+
+                    while (true) {
+                        target = Math.floor((beginning + end) / 2);
+                        pos = lines[i].getPointAtLength(target);
+                        if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+                            break;
+                        }
+                        if (pos.x > mouse[0]) end = target;
+                        else if (pos.x < mouse[0]) beginning = target;
+                        else break; //position found
+                    }
+
+                    d3.select(this).select('text')
+                        .text(y.invert(pos.y).toFixed(2));
+
+                    return "translate(" + mouse[0] + "," + pos.y + ")";
+                });
+        });
 }
 
 var config = {
     data: data,
+    k: "date",
+    v: "temperature",
     selector: "#multiline_chart",
     margin: {
         top: 20,
@@ -2439,7 +2442,8 @@ var config = {
         left: 50
     },
     time_format: "%Y%m%d",
-    sortby_column: "date"
+    line_stroke_width: "1.5px",
+    yaxis_label: "Temperature (ºF)"
 }
 
 multiline_chart(config)
