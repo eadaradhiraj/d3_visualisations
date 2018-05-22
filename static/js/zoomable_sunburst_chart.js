@@ -49,7 +49,7 @@ function zoomable_sunburst_chart(config) {
         return d.data.name.length * CHAR_SPACE < perimeter;
     };
 
-    const svg = d3.select(config.selector).append('svg')
+    const svg = d3.select("#"+config.selector).append('svg')
         .style('width', config.width)
         .style('height', config.height)
         .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
@@ -60,36 +60,39 @@ function zoomable_sunburst_chart(config) {
     root = d3.hierarchy(config.data);
     root.sum(d => d.size);
 
-    const slice = svg.selectAll('g.slice')
+    const slice = svg.selectAll('g.slice'+" "+config.selector)
         .data(partition(root).descendants());
 
     slice.exit().remove();
 
     const newSlice = slice.enter()
-        .append('g').attr('class', 'slice')
+        .append('g').attr('class', 'slice'+" "+config.selector)
         .on('click', d => {
             d3.event.stopPropagation();
             focusOn(d);
         });
 
     newSlice.append('title')
+        .attr('class', 'textPath'+' '+config.selector)
         .text(d => d.data.name + '\n' + formatNumber(d.value));
 
     newSlice.append('path')
-        .attr('class', 'main-arc')
+        .attr('class', 'main-arc'+" "+config.selector)
         .style('fill', d => color((d.children ? d : d.parent).data.name))
         .attr('d', arc);
 
     newSlice.append('path')
-        .attr('class', 'hidden-arc')
+        .attr('class', 'hidden-arc'+" "+config.selector)
         .attr('id', (_, i) => `hiddenArc${i}`)
         .attr('d', middleArcLine);
 
     const text = newSlice.append('text')
+        .attr('class', "label"+" "+config.selector)
         .attr('display', d => textFits(d) ? null : 'none');
 
     // Add white contour
     text.append('textPath')
+        .attr('class', "textPath"+" "+config.selector)
         .attr('startOffset', '50%')
         .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
         .text(d => d.data.name)
@@ -99,6 +102,7 @@ function zoomable_sunburst_chart(config) {
         .style('stroke-linejoin', 'round');
 
     text.append('textPath')
+        .attr('class', "textPath"+" "+config.selector)
         .attr('startOffset', '50%')
         .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
         .text(d => d.data.name);
@@ -123,19 +127,19 @@ function zoomable_sunburst_chart(config) {
                 };
             });
 
-        transition.selectAll('path.main-arc')
+        transition.selectAll('path.main-arc'+"."+config.selector)
             .attrTween('d', d => () => arc(d));
 
-        transition.selectAll('path.hidden-arc')
+        transition.selectAll('path.hidden-arc'+"."+config.selector)
             .attrTween('d', d => () => middleArcLine(d));
 
-        transition.selectAll('text')
+        transition.selectAll('text.label'+"."+config.selector)
             .attrTween('display', d => () => textFits(d) ? null : 'none');
 
         moveStackToFront(d);
 
         function moveStackToFront(elD) {
-            svg.selectAll('.slice').filter(d => d === elD)
+            svg.selectAll('.slice'+"."+config.selector).filter(d => d === elD)
                 .each(function (d) {
                     this.parentNode.appendChild(this);
                     if (d.parent) {
@@ -1432,14 +1436,14 @@ var data2 = {
 
 var config1 = {
     data: data2,
-    selector: "#sunburst1",
+    selector: "sunburst1",
     width: "100vw",
     height: "100vh"
 }
 
 var config2 = {
     data: data2,
-    selector: "#sunburst2",
+    selector: "sunburst2",
     width: 1000,
     height: 1000
 }

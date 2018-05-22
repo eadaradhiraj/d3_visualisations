@@ -2296,12 +2296,12 @@ function multiline_chart(config) {
         });
 
     svg.append("g")
-        .attr("class", "x axis")
+        .attr("class", "x axis"+" "+config.selector)
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis.tickSize(-height))
 
     svg.append("g")
-        .attr("class", "y axis")
+        .attr("class", "y axis"+" "+config.selector)
         .call(yAxis.tickSize(-width))
         .append("text")
         .attr("transform", "rotate(-90)")
@@ -2347,9 +2347,9 @@ function multiline_chart(config) {
     var mouseG = svg.append("g")
         .attr("class", "mouse-over-effects"+" "+config.selector);
 
-    d3.selectAll('g.tick line')
-        .style('stroke-width', 0.7)
-        .style("stroke", "lightgrey")
+    d3.selectAll('g.axis' +"."+config.selector+' '+'g.tick'+' '+'line')
+        .style('stroke-width', config.tick_line_stroke_width)
+        .style("stroke", "black")
 
     mouseG.append("path") // this is the black vertical line to follow mouse
         .attr("class", "mouse-line"+" "+config.selector)
@@ -2451,7 +2451,8 @@ var config = {
     },
     time_format: "%Y%m%d",
     line_stroke_width: "1.5px",
-    yaxis_label: "Temperature (ºF)"
+    yaxis_label: "Temperature (ºF)",
+    tick_line_stroke_width: 0.5
 }
 
 var config1 = {
@@ -2467,7 +2468,8 @@ var config1 = {
     },
     time_format: "%Y",
     line_stroke_width: "3.5px",
-    yaxis_label: "God Knows"
+    yaxis_label: "God Knows",
+    tick_line_stroke_width: 0.0
 }
 
 multiline_chart(config)
