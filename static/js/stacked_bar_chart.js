@@ -741,9 +741,10 @@ var data3 = [{
 
 
 function stacked_bar_chart(config) {
-    me = this,
+
         selector = config.selector,
-        stackKey = config.key,
+        stackKey = config.vals,
+        key = config.key,
         data = config.data,
         margin = {
             top: 20,
@@ -751,19 +752,23 @@ function stacked_bar_chart(config) {
             bottom: 30,
             left: 50
         },
-        parseDate = d3.timeParse("%m/%Y"),
+        is_date_time = (key.toLowerCase == "date" || key.toLowerCase == "time"),
+        parseDate = d3.timeParse(config.time_format),
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom,
         xScale = d3.scaleBand().range([0, width]).padding(0.1),
         yScale = d3.scaleLinear().range([height, 0]),
         color = d3.scaleOrdinal(d3.schemeCategory20),
-        xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")),
+        xAxis = d3.axisBottom(xScale),
         yAxis = d3.axisLeft(yScale),
         svg = d3.select("#" + selector).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    if (is_date_time)
+        xAxis.tickFormat(d3.timeFormat("%b"))
 
     var stack = d3.stack()
         .keys(stackKey)
@@ -775,7 +780,10 @@ function stacked_bar_chart(config) {
         return b.total - a.total;
     });
     xScale.domain(data.map(function (d) {
-        return parseDate(d.date);
+        if (is_date_time)
+            return parseDate(d[key]);
+        else
+            return d[key];
     }));
     yScale.domain([0, d3.max(layers[layers.length - 1], function (d) {
         return d[0] + d[1];
@@ -795,7 +803,10 @@ function stacked_bar_chart(config) {
         })
         .enter().append("rect")
         .attr("x", function (d) {
-            return xScale(parseDate(d.data.date));
+            if (is_date_time)
+                return xScale(parseDate(d.data[key]));
+            else
+                return xScale(d.data[key])
         })
         .attr("y", function (d) {
             return yScale(d[1]);
@@ -851,6 +862,7 @@ function stacked_bar_chart(config) {
         .text(function (d) {
             return d;
         });
+
     var tooltip = svg.append("g")
         .attr("class", "tooltip")
         .style("display", "none");
@@ -867,13 +879,37 @@ function stacked_bar_chart(config) {
         .style("text-anchor", "middle")
         .attr("font-size", "12px")
         .attr("font-weight", "bold");
+}
 
+var config1 = {
+    data: data1,
+    vals: ["redDelicious","mcintosh","oranges","pears"],
+    key: "year",
+    selector: 'stacked_bar_chart1',
+    time_format: "%m/%Y"
 }
 
 var config2 = {
     data: data2,
-    key: ["wounds", "other", "disease"],
-    selector: 'stacked_bar_chart2'
+    vals: ["wounds"],
+    key: "date",
+    selector: 'stacked_bar_chart2',
+    time_format: "%m/%Y"
 }
 
+var config3 = {
+    data: data3,
+    vals: ["Under 5 Years",
+    "5 to 13 Years",
+    "14 to 17 Years",
+    "18 to 24 Years",
+    "25 to 44 Years",
+    "45 to 64 Years",
+    "65 Years and Over"],
+    key: "State",
+    selector: 'stacked_bar_chart3'
+}
+
+stacked_bar_chart(config1)
 stacked_bar_chart(config2)
+stacked_bar_chart(config3)
