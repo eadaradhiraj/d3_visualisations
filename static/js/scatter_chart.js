@@ -1427,7 +1427,10 @@ function scatter_chart(config) {
             return yScale(d[y]);
         })
         .attr('r', function (d) {
-            return radius(d[r]);
+            if (r==="")
+                return 5
+            else
+                return radius(d[r]);
         })
         .style('fill', function (d) {
             return color(d[config.key]);
@@ -1435,7 +1438,10 @@ function scatter_chart(config) {
 
     bubble.append('title')
         .attr('x', function (d) {
-            return radius(d[r]);
+            if (r==="")
+                return 5
+            else
+                return radius(d[r]);
         })
         .text(function (d) {
             return d[config.key];
@@ -1522,7 +1528,7 @@ var config2 = {
     key: "country",
     x: "cost",
     y: "expectancy",
-    r: "population"
+    r: ""
 }
 
 scatter_chart(config1)
