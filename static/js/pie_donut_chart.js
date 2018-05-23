@@ -45,13 +45,37 @@ var data2 = [{
         value: 27
     }
 ]
-var data3 = [
-    {name: 'cats', count: 3, percentage: 2, color: '#000000'},
-    {name: 'dogs', count: 10, percentage: 8, color: '#f8b70a'},
-    {name: 'horses', count: 17, percentage: 15, color: '#6149c6'},
-    {name: 'goats', count: 47, percentage: 41, color: '#9f8170'},
-    {name: 'cows', count: 35, percentage: 31, color: '#8ABD4A'},
-  ];
+var data3 = [{
+        name: 'cats',
+        count: 3,
+        percentage: 2,
+        color: '#000000'
+    },
+    {
+        name: 'dogs',
+        count: 10,
+        percentage: 8,
+        color: '#f8b70a'
+    },
+    {
+        name: 'horses',
+        count: 17,
+        percentage: 15,
+        color: '#6149c6'
+    },
+    {
+        name: 'goats',
+        count: 47,
+        percentage: 41,
+        color: '#9f8170'
+    },
+    {
+        name: 'cows',
+        count: 35,
+        percentage: 31,
+        color: '#8ABD4A'
+    },
+];
 
 function pie_donut_chart(config) {
     var pie = d3.pie()
@@ -79,7 +103,7 @@ function pie_donut_chart(config) {
         .attr("height", h)
         .attr("class", 'shadow')
         .append('g')
-        .attr("transform", 'translate(' + (w / 3) + ',' + h / 3 + ')');
+        .attr("transform", 'translate(' + (w / 3) + ',' + h / 2 + ')');
 
     var path = svg.selectAll('path')
         .data(pie(config.data))
@@ -100,6 +124,21 @@ function pie_donut_chart(config) {
             return function (t) {
                 return arc(interpolate(t));
             };
+        });
+
+    path
+        .on("mousemove", function (d, i) {
+            var arcOver = d3.arc() // Size of donut chart when hovering
+                .outerRadius(outerRadius + 5 )
+                .innerRadius(innerRadius);
+            d3.select(this).transition()
+                .duration(100)
+                .attr("d", arcOver);
+        })
+        .on("mouseout", function (d, i) {
+            d3.select(this).transition()
+                .duration(100)
+                .attr("d", arc);
         });
 
 
